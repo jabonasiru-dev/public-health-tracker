@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Public Health & Immunization Helper</title>
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-dark: #115e59;
+      --bg: #f0fdfa;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1fae5;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+    }
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 20px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header h1 { margin: 0; font-size: 1.35rem; }
+    header p { margin: 4px 0 0; font-size: 0.9rem; opacity: 0.92; }
+    .lang-btn {
+      background: #fff;
+      color: var(--primary-dark);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(15, 118, 110, 0.06);
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.1rem;
+      color: var(--primary-dark);
+    }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.92rem; }
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button.action-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+    }
+    button.action-btn:hover { background: var(--primary-dark); }
+    .result-box {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      display: none;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    th { background: #ecfdf5; color: var(--primary-dark); }
+    footer {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1 id="appTitle">Public Health & Immunization Helper</h1>
+        <p id="appSubtitle">Community Health Support Tool • Built by jabonasiru-dev</p>
+      </div>
+      <button class="lang-btn" id="langToggle" onclick="toggleLang()">Hausa</button>
+    </header>
+
+    <section class="card">
+      <h2 id="immTitle">Child Immunization Schedule Calculator</h2>
+      <div class="form-group">
+        <label id="dobLabel" for="dobInput">Child's Date of Birth</label>
+        <input type="date" id="dobInput" />
+      </div>
+      <button class="action-btn" id="calcImmBtn" onclick="calculateImmunization()">Generate Schedule</button>
+      <div class="result-box" id="immResult"></div>
+    </section>
+
+    <section class="card">
+      <h2 id="bmiTitle">BMI & Nutrition Check</h2>
+      <div class="form-group">
+        <label id="weightLabel" for="weightInput">Weight (kg)</label>
+        <input type="number" step="0.1" id="weightInput" placeholder="e.g. 65" />
+      </div>
+      <div class="form-group">
+        <label id="heightLabel" for="heightInput">Height (cm)</label>
+        <input type="number" step="0.1" id="heightInput" placeholder="e.g. 170" />
+      </div>
+      <button class="action-btn" id="calcBmiBtn" onclick="calculateBMI()">Check BMI</button>
+      <div class="result-box" id="bmiResult"></div>
+    </section>
+
+    <footer id="footerText">
+      Educational public health prototype for iSoftDev portfolio demonstration. Always consult a qualified healthcare worker for clinical decisions.
+    </footer>
+  </div>
+
+  <script>
+    let lang = "en";
+
+    const i18n = {
+      en: {
+        title: "Public Health & Immunization Helper",
+        subtitle: "Community Health Support Tool • Built by jabonasiru-dev",
+        toggle: "Hausa",
+        immTitle: "Child Immunization Schedule Calculator",
+        dobLabel: "Child's Date of Birth",
+        calcImmBtn: "Generate Schedule",
+        bmiTitle: "BMI & Nutrition Check",
+        weightLabel: "Weight (kg)",
+        heightLabel: "Height (cm)",
+        calcBmiBtn: "Check BMI",
+        footer: "Educational public health prototype for iSoftDev portfolio demonstration. Always consult a qualified healthcare worker for clinical decisions.",
+        pickDob: "Please select a date of birth.",
+        vaccineCol: "Vaccine / Milestone",
+        dueCol: "Estimated Date",
+        invalidBmi: "Please enter valid positive weight and height values.",
+        underweight: "Underweight — Consider nutrient-dense meals (legumes, dairy, eggs, fruits).",
+        normal: "Normal weight — Maintain balanced diet and regular physical activity.",
+        overweight: "Overweight — Reduce sugary/processed foods and increase physical activity.",
+        obese: "Obesity — Seek personalized nutrition and medical guidance."
+      },
+      ha: {
+        title: "Manhajar Taimakon Lafiyar Al'umma da Riga-Kafi",
+        subtitle: "Kayan Tallafin Lafiya • An gina ta hannun jabonasiru-dev",
+        toggle: "English",
+        immTitle: "Lissafin Ranakun Allurar Riga-Kafin Yaro",
+        dobLabel: "Ranar Haihuwar Yaro",
+        calcImmBtn: "Fitar da Jadawalin Allura",
+        bmiTitle: "Gwajin Ma'aunin Jiki (BMI) da Abinci Mai Gina Jiki",
+        weightLabel: "Nauyi (kg)",
+        heightLabel: "Tsawo (cm)",
+        calcBmiBtn: "Duba BMI",
+        footer: "Gwajin manhajar lafiyar al'umma don nuna kwarewa a iSoftDev. A ko da yaushe a tuntubi ma'aikacin lafiya don shawarar asibiti.",
+        pickDob: "Da fatan za a zabi ranar haihuwa.",
+        vaccineCol: "Allura / Mataki",
+        dueCol: "Kimanin Rana",
+        invalidBmi: "Da fatan za a shigar da sahihin nauyi da tsawo.",
+        underweight: "Nauyi bai kai daidai ba — A kara cin abinci mai gina jiki (wake, madara, kwai, 'ya'yan itatuwa).",
+        normal: "Nauyi daidai yake — A ci gaba da cin abinci mai gina jiki da motsa jiki.",
+        overweight: "Nauyi ya dan yi yawa — A rage abinci mai sukari ko sarrafaffe kuma a yi motsa jiki.",
+        obese: "Kiba mai yawa — A nemi shawarar likita da masanin abinci mai gina jiki."
+      }
+    };
+
+    function toggleLang() {
+      lang = lang === "en" ? "ha" : "en";
+      const t = i18n[lang];
+      document.getElementById("appTitle").textContent = t.title;
+      document.getElementById("appSubtitle").textContent = t.subtitle;
+      document.getElementById("langToggle").textContent = t.toggle;
+      document.getElementById("immTitle").textContent = t.immTitle;
+      document.getElementById("dobLabel").textContent = t.dobLabel;
+      document.getElementById("calcImmBtn").textContent = t.calcImmBtn;
+      document.getElementById("bmiTitle").textContent = t.bmiTitle;
+      document.getElementById("weightLabel").textContent = t.weightLabel;
+      document.getElementById("heightLabel").textContent = t.heightLabel;
+      document.getElementById("calcBmiBtn").textContent = t.calcBmiBtn;
+      document.getElementById("footerText").textContent = t.footer;
+    }
+
+    function addDays(dateStr, days) {
+      const d = new Date(dateStr + "T00:00:00");
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split("T")[0];
+    }
+
+    function calculateImmunization() {
+      const dob = document.getElementById("dobInput").value;
+      const box = document.getElementById("immResult");
+      const t = i18n[lang];
+      box.style.display = "block";
+
+      if (!dob) {
+        box.innerHTML = `<p style="color:#b91c1c;margin:0;">${t.pickDob}</p>`;
+        return;
+      }
+
+      const schedule = [
+        { name: "BCG, OPV 0, HepB0 (At Birth)", days: 0 },
+        { name: "Penta 1, PCV 1, Rota 1, OPV 1 (6 Weeks)", days: 42 },
+        { name: "Penta 2, PCV 2, Rota 2, OPV 2 (10 Weeks)", days: 70 },
+        { name: "Penta 3, PCV 3, OPV 3, IPV (14 Weeks)", days: 98 },
+        { name: "Measles 1 & Yellow Fever (9 Months)", days: 270 }
+      ];
+
+      let rows = schedule.map(item =>
+        `<tr><td>${item.name}</td><td><strong>${addDays(dob, item.days)}</strong></td></tr>`
+      ).join("");
+
+      box.innerHTML = `
+        <table>
+          <thead><tr><th>${t.vaccineCol}</th><th>${t.dueCol}</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function calculateBMI() {
+      const w = parseFloat(document.getElementById("weightInput").value);
+      const hCm = parseFloat(document.getElementById("heightInput").value);
+      const box = document.getElementById("bmiResult");
+      const t = i18n[lang];
+      box.style.display = "block";
+
+      if (!w || !hCm || w <= 0 || hCm <= 0) {
+        box.innerHTML = `<p style="color:#b91c1c;margin:0;">${t.invalidBmi}</p>`;
+        return;
+      }
+
+      const hM = hCm / 100;
+      const bmi = (w / (hM * hM)).toFixed(1);
+
+      let advice = t.normal;
+      if (bmi < 18.5) advice = t.underweight;
+      else if (bmi >= 25 && bmi < 30) advice = t.overweight;
+      else if (bmi >= 30) advice = t.obese;
+
+      box.innerHTML = `
+        <p style="margin:0 0 6px;"><strong>BMI: ${bmi}</strong></p>
+        <p style="margin:0;">${advice}</p>
+      `;
+    }
+  </script>
+</body>
+  </html>
+  
